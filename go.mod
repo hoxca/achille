@@ -1,6 +1,6 @@
 module achille
 
-go 1.13
+go 1.15
 
 require (
 	github.com/apatters/go-conlog v1.3.0

@@ -17,6 +17,7 @@ package main
 
 import (
 	"achille/cmd"
+	_ "time/tzdata"
 )
 
 func main() {
