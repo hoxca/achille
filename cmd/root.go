@@ -85,7 +85,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is .achille.yaml in program location directory)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is achille.yaml in program location or conf directory of program location)")
 	rootCmd.PersistentFlags().StringVar(&talonLogFile, "talonLogFile", "", "talon log file location (default is Talon6_ROR.log in program location directory)")
 	rootCmd.PersistentFlags().StringVar(&myLocation, "location", "", "location timezone (default is \"Europe/Paris\")")
 	rootCmd.PersistentFlags().IntVar(&delay, "delay", 30, "delay in seconds before considering last log line too old to process")
@@ -96,6 +96,7 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 
+	setUpLogs()
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -105,19 +106,24 @@ func initConfig() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		// Search yaml config file in program path with name ".achille.yaml".
+		confdir := fmt.Sprintf("%s/conf", dir)
+		// Search yaml config file in program path with name "achille.yaml".
 		viper.AddConfigPath(dir)
+		viper.AddConfigPath(confdir)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".achille.yaml")
+		viper.SetConfigName("achille")
 	}
 
-	setUpLogs()
 	viper.AutomaticEnv()
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			cfgFileNotFound = true
+			Log.Debug("Config file not found")
+		} else {
+			Log.Debug("Something look strange")
+			Log.Debugf("error: %v\n", err)
 		}
 	} else {
 		Log.Debug("Using config file:", viper.ConfigFileUsed())
