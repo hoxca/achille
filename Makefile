@@ -98,7 +98,7 @@ build: ; $(info $(M) building executable…) @ ## Build program binary
 
 .PHONY: winbuild
 winbuild: ; $(info $(M) building executable…) @ ## Build program binary
-	$Q GOOS=windows GOARCH=386 $(GO) build \
+	$Q GOOS=windows GOARCH=amd64 $(GO) build \
 		-tags release \
 		-ldflags '-X $(MODULE)/cmd.Version=$(VERSION) -X $(MODULE)/cmd.BuildDate=$(DATE)' \
 		-o $(BIN)/$(basename $(MODULE)).exe main.go
